@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css"  href="css/jquery.mobile-1.3.1.min.css"/>
+        <link rel="stylesheet" type="text/css" href="css/jquery.mobile.theme-1.3.1.min.css"/>
+        <title>Gasolineras</title>
+</head>
+    <body onload="loadEstados();">
+        <script type="text/javascript" src="cordova-2.6.0.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.3.1.min.js"></script>
+        <div data-role="page" id="pageBusqueda">
+            <div data-role="header" data-position="fixed">
+                <a href="index.html" data-icon="arrow-l" class="ui-btn-left">Inicio</a>
+                <h1>Gasolinera</h1>
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a href="#" class="ui-btn-active">Busqueda</a></li>
+                            <li><a href="ubicacion.html">Ubicacion</a></li>
+                            <li><a href="acerca.html">About</a></li>
+                        </ul>
+                    </div><!-- /navbar -->
+            </div>
+            <div data-role="content">
+                <div id="estados" data-role="listview" data-filter="true">
+                
+                </div>
+            </div>
+            <div data-role="footer" data-position="fixed">
+                <h4>CFE - Laguna Verde -</h4>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+        $('#pageBusqueda').on('pageshow',function(event,ui){
+            loadEstados();
+            console.log("entro a cargar load estados");
+        });
+        
+        function loadEstados() {
+            $.getJSON('http://gasolineras.herokuapp.com/estados.json', function(data) {
+                var items = [];
+                items.push('<li data-role="list-divider">Estados</li>');
+                $.each(data, function(index, val) {
+                    items.push( '<li><a href="#" onclick="selectEstado(&quot;'+val.id +'&quot;)">' +
+                               val.name+'</a></li>' );
+                                                  });
+                var items_str = items.join('');
+                $('#estados').append(items_str);
+                $('#estados').listview('refresh');
+            });
+        }
+        
+        function selectEstado(estadoId){
+            console.log("entro a funcion selectestado" + estadoId);
+            localStorage['estado_Id'] = estadoId;
+        }
+        
+        function loadMunicipios( id_estado ) {
+            $.getJSON('http://gasolineras.herokuapp.com/municipios/estados.json', function(data) {
+                var items = [];
+                items.push('<li data-role="list-divider">Municipios</li>');
+                $.each(data, function(index, val) {
+
+                    items.push( '<li><a href="#">'+val.name+'</a><a href="#"
+                               onclick="selectMunicipio(&quot;'+val.id +'&quot;)">select municipio</a></li>' );
+                               });
+                    $('#municipios').append(items.join(''));
+                    $('#municipios').listview('refresh');
+                });
+            }
+    </script>
+</html>
